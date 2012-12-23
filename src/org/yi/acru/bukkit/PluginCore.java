@@ -844,8 +844,6 @@ public abstract class PluginCore extends JavaPlugin{
 		
 		int			face = block.getData() & 0x3;
 		
-		System.out.println("face = " + face);
-		
 		if(face == 1) return(block.getRelative(BlockFace.NORTH));
 		if(face == 2) return(block.getRelative(BlockFace.EAST));
 		if(face == 0) return(block.getRelative(BlockFace.SOUTH));
