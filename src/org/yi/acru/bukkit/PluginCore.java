@@ -46,7 +46,7 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 
 public abstract class PluginCore extends JavaPlugin{
-	private static final String				coreVersion = "1.3.5";
+	private static final String				coreVersion = "1.3.6";
 	public static final Logger				log = Logger.getLogger("Minecraft");
 	
 	private static boolean					registered = false;
@@ -844,10 +844,12 @@ public abstract class PluginCore extends JavaPlugin{
 		
 		int			face = block.getData() & 0x3;
 		
-		if(face == 3) return(block.getRelative(BlockFace.NORTH));
-		if(face == 1) return(block.getRelative(BlockFace.EAST));
-		if(face == 2) return(block.getRelative(BlockFace.SOUTH));
-		if(face == 0) return(block.getRelative(BlockFace.WEST));
+		System.out.println("face = " + face);
+		
+		if(face == 1) return(block.getRelative(BlockFace.NORTH));
+		if(face == 2) return(block.getRelative(BlockFace.EAST));
+		if(face == 0) return(block.getRelative(BlockFace.SOUTH));
+		if(face == 3) return(block.getRelative(BlockFace.WEST));
 		
 		return(null);
 	}
