@@ -27,7 +27,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import org.yi.acru.bukkit.PluginCoreLink.LinkType;
 
-import com.gmail.nossr50.datatypes.PlayerProfile;
+import com.gmail.nossr50.api.PartyAPI;
+//import com.gmail.nossr50.datatypes.PlayerProfile;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Protection;
 import com.nijiko.permissions.PermissionHandler;
@@ -46,7 +47,7 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 
 public abstract class PluginCore extends JavaPlugin{
-	private static final String				coreVersion = "1.3.6";
+	private static final String				coreVersion = "1.3.7";
 	public static final Logger				log = Logger.getLogger("Minecraft");
 	
 	private static boolean					registered = false;
@@ -546,10 +547,15 @@ public abstract class PluginCore extends JavaPlugin{
 			}
 			
 			if(linkMcmmo.isEnabled()) if(player != null){
-				PlayerProfile	pProfile = linkMcmmo.getMcmmo().getPlayerProfile(player.getName());
+//				PlayerProfile	pProfile = linkMcmmo.getMcmmo().getPlayerProfile(player.getName());
+//				
+//				if(pProfile != null) if(pProfile.inParty()){
+//					if(pProfile.getParty().getName().equalsIgnoreCase(groupName.substring(1, end))) return(true);
+//				}
 				
-				if(pProfile != null) if(pProfile.inParty()){
-					if(pProfile.getParty().getName().equalsIgnoreCase(groupName.substring(1, end))) return(true);
+				if (PartyAPI.inParty(player)) {
+					
+					if (PartyAPI.getPartyName(player).equalsIgnoreCase(groupName.substring(1, end))) return(true);
 				}
 			}
 			
