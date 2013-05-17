@@ -3,14 +3,14 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="../lib/bukkit.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="J:/GitHub/lib/Factions.jar"/>
-	<classpathentry kind="lib" path="J:/GitHub/lib/LWC.jar"/>
-	<classpathentry kind="lib" path="J:/GitHub/lib/mcMMO.jar"/>
-	<classpathentry kind="lib" path="J:/GitHub/lib/Permissions.jar"/>
-	<classpathentry kind="lib" path="J:/GitHub/lib/PermissionsBukkit.jar"/>
-	<classpathentry kind="lib" path="J:/GitHub/lib/PermissionsEx.jar"/>
-	<classpathentry kind="lib" path="J:/GitHub/lib/SimpleClans-2.3.4.jar"/>
-	<classpathentry kind="lib" path="J:/GitHub/lib/Towny.jar"/>
+	<classpathentry kind="lib" path="../lib/Factions.jar"/>
+	<classpathentry kind="lib" path="../lib/LWC.jar"/>
+	<classpathentry kind="lib" path="../lib/mcMMO.jar"/>
+	<classpathentry kind="lib" path="../lib/Permissions.jar"/>
+	<classpathentry kind="lib" path="../lib/PermissionsBukkit.jar"/>
+	<classpathentry kind="lib" path="../lib/PermissionsEx.jar"/>
+	<classpathentry kind="lib" path="../lib/SimpleClans-2.3.4.jar"/>
+	<classpathentry kind="lib" path="../lib/Towny.jar"/>
 	<classpathentry kind="lib" path="../lib/Register.jar"/>
 	<classpathentry kind="lib" path="../lib/EssentialsGroupManager.jar"/>
 	<classpathentry kind="lib" path="../lib/bpermissions.jar"/>
