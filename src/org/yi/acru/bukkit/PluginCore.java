@@ -8,8 +8,6 @@
 package org.yi.acru.bukkit;
 
 
-// Imports.
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -24,25 +22,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import org.yi.acru.bukkit.PluginCoreLink.LinkType;
 
 import com.gmail.nossr50.api.PartyAPI;
 //import com.gmail.nossr50.datatypes.PlayerProfile;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Protection;
-import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.register.payment.Method.MethodAccount;
 import com.nijikokun.register.payment.Methods;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
-import com.platymuus.bukkit.permissions.Group;
-import de.bananaco.bpermissions.api.WorldManager;
+
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
-import org.anjocaido.groupmanager.GroupManager;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 
 
@@ -65,11 +58,7 @@ public abstract class PluginCore extends JavaPlugin{
 	
 	private static List<PluginCoreLink>		linkList = null;
 	private static PluginCoreLink			linkSuperPerms = null;
-	private static PluginCoreLink			linkGroupManager = null;
-	
-	private static PluginCoreLink			linkPermsBukkit = null;
-	private static PluginCoreLink			linkPermissionsEx = null;
-	private static PluginCoreLink			linkBPermissions = null;
+	private static PluginCoreLink			linkVault = null;
 	private static PluginCoreLink			linkTowny = null;
 	private static PluginCoreLink			linkSimpleClans = null;
 	private static PluginCoreLink			linkMcmmo = null;
@@ -79,7 +68,6 @@ public abstract class PluginCore extends JavaPlugin{
 	private static PluginCoreLink			linkRegister = null;
 	
 	private static PluginCoreLink			linkPermissions = null;
-	private static boolean					permissionsWorld = false;
 	
 	
 	
@@ -134,10 +122,7 @@ public abstract class PluginCore extends JavaPlugin{
 		linkSuperPerms = linkInternalPerms();
 		
 		// Link to various plugins, if available.
-		linkGroupManager = linkExternalPlugin("GroupManager", LinkType.GroupManager);
-		linkPermsBukkit = linkExternalPlugin("PermissionsBukkit", LinkType.GROUPS_PERMISSIONS);
-		linkPermissionsEx = linkExternalPlugin("PermissionsEx", LinkType.GROUPS_PERMISSIONS);
-		linkBPermissions = linkExternalPlugin("bPermissions", LinkType.GROUPS_PERMISSIONS);
+		linkVault = linkExternalPlugin("Vault", LinkType.Permissions);
 		linkTowny = linkExternalPlugin("Towny", LinkType.GROUPS_ZONES);
 		linkSimpleClans = linkExternalPlugin("SimpleClans", LinkType.GROUPS);
 		linkMcmmo = linkExternalPlugin("mcMMO", LinkType.GROUPS);
@@ -145,8 +130,6 @@ public abstract class PluginCore extends JavaPlugin{
 		linkLWC = linkExternalPlugin("LWC", LinkType.ZONES);
 		//linkIConomy = linkExternalPlugin("iConomy", LinkType.ECONOMY);
 		linkRegister = linkExternalPlugin("Register", LinkType.ECONOMY);
-		// Permissions classic last.
-		linkPermissions = linkExternalPlugin("Permissions", LinkType.Permissions);
 		
 		if(usingExternalPermissions()) log.info("[" + getDescription().getName() + "] Using linked plugin for admin permissions.");
 		else log.info("[" + getDescription().getName() + "] Using ops file for admin permissions.");
@@ -180,7 +163,7 @@ public abstract class PluginCore extends JavaPlugin{
 		log.info("Number of linked economy plugins: " + useExternalEconomy);
 		
 		if(linkSuperPerms.isEnabled()){
-			Player[]	players = getServer().getOnlinePlayers();
+			Player[]	players = getServer().getOnlinePlayers().toArray(new Player[0]);
 			
 			log.info("Superperms is available, " + players.length + " players online.");
 			
@@ -275,6 +258,8 @@ public abstract class PluginCore extends JavaPlugin{
 			case GROUPS_PERMISSIONS_ZONES:
 				useExternalGroups += difference;
 				break;
+			default:
+				break;
 			}
 			
 			switch(link.getType()){
@@ -283,6 +268,8 @@ public abstract class PluginCore extends JavaPlugin{
 			case PERMISSIONS_ZONES:
 			case GROUPS_PERMISSIONS_ZONES:
 				useExternalPermissions += difference;
+				break;
+			default:
 				break;
 			}
 			
@@ -293,21 +280,21 @@ public abstract class PluginCore extends JavaPlugin{
 			case GROUPS_PERMISSIONS_ZONES:
 				useExternalZones += difference;
 				break;
+			default:
+				break;
 			}
 			
 			switch(link.getType()){
 			case ECONOMY:
 				useExternalEconomy += difference;
 				break;
+			default:
+				break;
 			}
 			
 			
 			// Handle specific plugin enables.
 			switch(link.getType()){
-			case GroupManager:
-				result = enableLinkGroupManager(link, enable, difference);
-				break;
-
 			case Permissions:
 				result = enableLinkPermissions(link, enable, difference);
 				break;
@@ -351,81 +338,15 @@ public abstract class PluginCore extends JavaPlugin{
 	
 	
 	// Enable handler for a specialized external plugin, returns true is successful.
-	protected boolean enableLinkGroupManager(PluginCoreLink link, boolean enable, int difference){
-		if(enable){
-			// We don't know if the static or instanced method is the one available, so...
-			try{
-				Method		getWho = GroupManager.class.getMethod("getWorldsHolder", (Class[]) null);
-				
-				link.setData(getWho.invoke(link.getGroupManager(), (Object[]) null));
-			}
-			catch(Throwable ex){
-				// Failed to load
-				return(false);
-			}
-		}
-		
-		// Loaded okay, set the appropriate flags for this plugin.
-		useExternalGroups += difference;
-		useExternalPermissions += difference;
-		link.setEnabled(enable);
-		return(true);
-	}
-	
-	
-	// Enable handler for a specialized external plugin, returns true is successful.
 	protected boolean enableLinkPermissions(PluginCoreLink link, boolean enable, int difference){
 		boolean		usePerms = true;
 		
-		if(linkBPermissions != null) if(linkBPermissions.isLinked()){
-			// Use the built in bridge only for groups.
-			usePerms = false;
-		}
-		
 		if(enable){
 			// Detect fake permissions.
-			try{	// GroupManager
-				Class.forName("org.anjocaido.groupmanager.permissions.NijikoPermissionsProxy");
+			try{	// Vault
+				Class.forName("net.milkbowl.vault.permission.Permission");
 				link.setLinked(false);
 				return(false);
-			}
-			catch(Throwable ex){}
-			try{	// PermsBukkit
-				Class.forName("com.platymuus.bukkit.permcompat.PermissionHandler");
-				link.setLinked(false);
-				return(false);
-			}
-			catch(Throwable ex){}
-			try{	// PermissionsEx
-				Class.forName("ru.tehkode.permissions.compat.P2Group");
-				link.setLinked(false);
-				return(false);
-			}
-			catch(Throwable ex){}
-			//if(linkBPermissions.isLinked()){	// bPermissions (built in)
-				//link.setLinked(false);
-				//return(false);
-			//}
-			
-			
-			// Get permissions handler.
-			try{
-				link.setData(link.getPermissions().getHandler());
-			}
-			catch(Throwable ex){
-				// Failed to load
-				return(false);
-			}
-			
-			
-			// Check if the world-based inGroup function is available.
-			permissionsWorld = false;
-			try{
-				final Class<?>		args[] = {String.class, String.class, String.class};
-				
-				PermissionHandler.class.getMethod("inGroup", args);
-				
-				permissionsWorld = true;
 			}
 			catch(Throwable ex){}
 		}
@@ -484,37 +405,9 @@ public abstract class PluginCore extends JavaPlugin{
 		int			end = groupName.length() - 1;
 		
 		if(end >= 2) if((groupName.charAt(0) == '[') && (groupName.charAt(end) == ']')){
-			// PermsBukkit first.
-			if(linkPermsBukkit.isEnabled()){
-				Group		group = linkPermsBukkit.getPermsBukkit().getGroup(groupName.substring(1, end));
-				
-				if(group != null){
-					List<Group>		membership = linkPermsBukkit.getPermsBukkit().getGroups(playerName);
-					
-					if(membership != null){
-						int			x, count = membership.size();
-						
-						for(x = 0; x < count; ++x){
-							if(membership.get(x).equals(group)){
-								return(true);
-							}
-						}
-					}
-				}
-			}
-			
-			if(linkPermissionsEx.isEnabled()){
-				result = PermissionsEx.getUser(playerName).inGroup(groupName.substring(1, end), world.getName());
-				if(result) return(true);
-			}
-			
-			if(linkBPermissions.isEnabled()){
-				result = WorldManager.getInstance().getWorld(world.getName()).getUser(playerName).hasGroupRecursive(groupName.substring(1, end).toLowerCase());
-				if(result) return(true);
-			}
-			
-			if(linkGroupManager.isEnabled()){
-				result = linkGroupManager.getWorldsHolder().getWorldPermissions(world.getName()).inGroup(playerName, groupName.substring(1, end));
+
+			if(linkVault.isEnabled()){
+				result = linkVault.getVault().playerInGroup(world.getName(), player, groupName.substring(1, end));
 				if(result) return(true);
 			}
 			
@@ -566,13 +459,6 @@ public abstract class PluginCore extends JavaPlugin{
 					if(tag.equalsIgnoreCase(groupName.substring(1, end))) return(true);
 				}
 			}
-			
-			// Permissions classic last.
-			if(linkPermissions.isEnabled()){
-				if(permissionsWorld) result = linkPermissions.getPermissionHandler().inGroup(world.getName(), playerName, groupName.substring(1, end));
-				else result = linkPermissions.getPermissionHandler().inGroup(player.getWorld().getName(), playerName, groupName.substring(1, end));
-				if(result) return(true);
-			}
 		}
 		
 		return(false);
@@ -601,14 +487,9 @@ public abstract class PluginCore extends JavaPlugin{
 			if(result) return(true);
 		}
 		
-		if(linkGroupManager.isEnabled()){
-			result = linkGroupManager.getWorldsHolder().getWorldPermissions(world.getName()).has(player, permissionNode);
-			if(result) return(true);
-		}
-		
 		// Permissions classic last.
 		if(linkPermissions.isEnabled()){
-			result = linkPermissions.getPermissionHandler().has(player, permissionNode);
+			result = player.hasPermission(permissionNode);
 			if(result) return(true);
 		}
 		
@@ -722,7 +603,7 @@ public abstract class PluginCore extends JavaPlugin{
 		if(message == null) return;
 		if(message.isEmpty()) return;
 		
-		Player[]	players = getServer().getOnlinePlayers();
+		Player[]	players = getServer().getOnlinePlayers().toArray(new Player[0]);
 		
 		if(target.charAt(0) == '['){
 			// For groups.
@@ -747,7 +628,7 @@ public abstract class PluginCore extends JavaPlugin{
 	
 	public boolean playerOnline(String truncName){
 		String		text = truncName.replaceAll("(?i)\u00A7[0-F]", "");
-		Player[]	players = getServer().getOnlinePlayers();
+		Player[]	players = getServer().getOnlinePlayers().toArray(new Player[0]);
 		int			length;
 		
 		for(int x = 0; x < players.length; ++x){

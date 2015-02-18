@@ -6,13 +6,9 @@
 	<classpathentry kind="lib" path="../lib/Factions.jar"/>
 	<classpathentry kind="lib" path="../lib/LWC.jar"/>
 	<classpathentry kind="lib" path="../lib/mcMMO.jar"/>
-	<classpathentry kind="lib" path="../lib/Permissions.jar"/>
-	<classpathentry kind="lib" path="../lib/PermissionsBukkit.jar"/>
-	<classpathentry kind="lib" path="../lib/PermissionsEx.jar"/>
 	<classpathentry kind="lib" path="../lib/SimpleClans-2.3.4.jar"/>
 	<classpathentry kind="lib" path="../lib/Towny.jar"/>
 	<classpathentry kind="lib" path="../lib/Register.jar"/>
-	<classpathentry kind="lib" path="../lib/EssentialsGroupManager.jar"/>
-	<classpathentry kind="lib" path="../lib/bpermissions.jar"/>
+	<classpathentry kind="lib" path="../lib/Vault.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
